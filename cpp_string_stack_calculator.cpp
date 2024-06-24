@@ -1,53 +1,72 @@
-#define _CRT_SECURE_NO_WARNING
-#pragma warning(disable:4996)
-#include<iostream>
+#include <iostream>
+#include <string>
 using namespace std;
 
-
-class Book {
-	char* title;
-	int price;
-public:
-	Book(const char* title, int price);
-	Book(const Book& b);
-	~Book();
-	void set(const char* title, int price);
-	void show() {
-		cout << title << ' ' << price << "��" << endl; 
-	}
-};
-Book::Book(const char* title, int price) {
-	int n = strlen(title);
-	this->title = new char[n+1];
-	strcpy(this->title, title);
-	this->price = price;
-}
-Book::Book(const Book& b) {
-	int n = strlen(b.title);
-	this->title = new char[n + 1];
-	strcpy(this->title, b.title);
-	this->price = b.price;
+bool isOperator(char s) {
+	if (s == '+') return true;
+	if (s == '-') return true;
+	if (s == '*') return true;
+	if (s == '/') return true;
+	return false;
 }
 
-void Book::set(const char* title, int price) {
-	if (this->title)
-		delete[] this->title;
-	int n = strlen(title);
-	this->title = new char[n + 1];
-	strcpy(this->title, title);
-	this->price = price;
+int calculate(int a, int b, char oper) {
+	if (oper == '+') return a + b;
+	if (oper == '-') return a - b;
+	if (oper == '*') return a * b;
+	if (oper == '/') return a / b;
+	return 0;
 }
-
-Book::~Book() {
-	delete[] title;
-}
-
 
 int main() {
-	Book cpp("��ǰC++", 10000);
-	Book java = cpp;
-	java.set("��ǰ�ڹ�", 12000);
-	cpp.show();
-	java.show();
+	string s;
+	cout << "7+23*5-100/25와 같이 연산할 문자열을 입력하세요." << endl;
+
+
+
+	getline(cin, s, '\n'); // 문자열 입력
+
+	int sIndex = 0;
+	sIndex = s.find(' ', 0);
+	if (sIndex != 0)
+	{
+		s.erase(remove(s.begin(), s.end(), ' '), s.end());
+	}
+
+	int result = 0;
+	int startIndex = 0;
+	int count = 0;
+	char ch,oper=' ';
+
+	for (int i = 0; i < s.length(); i++)
+	{
+		ch = s[i];
+		count = i - startIndex;
+		if (isOperator(ch))
+		{
+			if (oper == ' ')
+			{
+				string part = s.substr(startIndex, count);
+				result = stoi(part);
+				startIndex = i + 1;
+				oper = ch;
+			}
+			else
+			{
+				string part = s.substr(startIndex, count);
+				result = calculate(result, stoi(part), oper);
+				oper = ch;
+				startIndex = i + 1;
+			}
+		}
+		if (i == s.length()-1)
+		{
+			string part = s.substr(startIndex, count +1);
+			result = calculate(result, stoi(part), oper);
+		}
+	}
+	
+	cout << "계산결과 : " << result;
+
 	return 0;
 }
